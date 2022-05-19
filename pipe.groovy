@@ -1,8 +1,8 @@
 pipeline {
     agent any
-    options { retry(3) }
-    options { timeout(time: 30, unit: 'MINUTES') }
-    options { buildDiscarder(logRotator(numToKeepStr: '1')) }
+    options { retry(3) 
+              timeout(time: 30, unit: 'MINUTES')
+              buildDiscarder(logRotator(numToKeepStr: '1')) }
     stages {
         stage('checkout') {
             steps {
@@ -22,21 +22,13 @@ pipeline {
         }
         stage('upload the artifact') {
             steps {
-                nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\pipeline_6\\target\\spring3-mvc-maven-xml-hello-world-1.2.war']], mavenCoordinate: [artifactId: 'example', groupId: 'test.com.one.two', packaging: 'war', version: '4.6']]]
+                nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: 'release', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\pipeline_6\\target\\spring3-mvc-maven-xml-hello-world-1.2.war']], mavenCoordinate: [artifactId: 'example', groupId: 'test.com.one.two', packaging: 'war', version: '4.7']]]
             }
         }
         stage('deploy') {
             steps {
                 deploy adapters: [tomcat9(credentialsId: 'tomcatcrede', path: '', url: 'http://localhost:8282/')], contextPath: 'testfive', onFailure: false, war: '**/target/*.war'
             }
-        }
-    }
-    post {
-        always {
-            mail bcc: '', body: '''HI 
-                Build got failed 
-               thanks
-               devops team''', cc: '', from: '', replyTo: '', subject: 'Hi', to: 'venkatn087@gmail.com'
         }
     }
     
